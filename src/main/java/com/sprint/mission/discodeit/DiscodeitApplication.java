@@ -17,8 +17,6 @@ public class DiscodeitApplication {
         ChannelService channelService = (ChannelService) context.getBean("basicChannelService");
         MessageService messageService = (MessageService) context.getBean("basicMessageService");
         UserService userService = (UserService) context.getBean("basicUserService");
-
-        channelService.create(ChannelType.PUBLIC, "아무거나", "테스트용 채널");
     }
 
 }

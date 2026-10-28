@@ -24,9 +24,9 @@ public class BasicUserService implements UserService {
 
     @Override
     public UserResponseDto create(UserCreateDto newUser) {
-        List<User> userList = userRepository.findAll();
-        boolean isDuplicatedUsername = isDuplicatedUsername(newUser.username(), userList);
-        boolean isDuplicatedEmail = isDuplicatedEmail(newUser.email(), userList);
+
+        boolean isDuplicatedUsername = isDuplicatedUsername(newUser.username());
+        boolean isDuplicatedEmail = isDuplicatedEmail(newUser.email());
 
         if (isDuplicatedUsername || isDuplicatedEmail) {
             throw new IllegalArgumentException("중복된 유저명 또는 이메일");
@@ -66,6 +66,13 @@ public class BasicUserService implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("해당 id(" + id + ")를 가진 유저를 찾을 수 없음"));
 
+        boolean isDuplicatedUsername = isDuplicatedUsername(user.getUsername());
+        boolean isDuplicatedEmail = isDuplicatedEmail(user.getEmail());
+
+        if (isDuplicatedUsername || isDuplicatedEmail) {
+            throw new IllegalArgumentException("중복된 유저명 또는 이메일");
+        }
+
         UUID oldProfileId = user.getProfileId();
         UUID newProfileId = null;
         if (dto.profile() != null) {
@@ -96,11 +103,13 @@ public class BasicUserService implements UserService {
         userRepository.deleteById(userId);
     }
 
-    private boolean isDuplicatedUsername(String username, List<User> userList) {
+    private boolean isDuplicatedUsername(String username) {
+        List<User> userList = userRepository.findAll();
         return userList.stream().anyMatch(user -> username.equals(user.getUsername()));
     }
 
-    private boolean isDuplicatedEmail(String email, List<User> userList) {
+    private boolean isDuplicatedEmail(String email) {
+        List<User> userList = userRepository.findAll();
         return userList.stream().anyMatch(user -> email.equals(user.getEmail()));
     }
 
