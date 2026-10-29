@@ -1,8 +1,8 @@
 package com.sprint.mission.discodeit.dto.request;
 
-public record UserCreateDto(
+public record UserCreateRequest(
         String username,
         String email,
         String password,
-        BinaryContentDto profile
+        BinaryContentRequest profile
 ) {}

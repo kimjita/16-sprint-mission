@@ -4,9 +4,9 @@ import com.sprint.mission.discodeit.entity.ChannelType;
 
 import java.util.UUID;
 
-public record ChannelCreateResponseDto(
+public record CreatePrivateChannelResponse(
         UUID id,
-        ChannelType channelType,
-        String name,
-        String description
-) { }
+        ChannelType channelType
+) {
+
+}

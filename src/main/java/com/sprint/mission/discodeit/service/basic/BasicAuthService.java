@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.request.LoginDto;
-import com.sprint.mission.discodeit.dto.response.UserResponseDto;
+import com.sprint.mission.discodeit.dto.request.LoginRequest;
+import com.sprint.mission.discodeit.dto.response.UserResponse;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.UserRepository;
@@ -21,7 +21,7 @@ public class BasicAuthService implements AuthService {
     private final UserStatusRepository userStatusRepository;
 
     @Override
-    public UserResponseDto login(LoginDto dto) {
+    public UserResponse login(LoginRequest dto) {
         List<User> userList = userRepository.findAll();
         for (User user : userList) {
             if (dto.username().equals(user.getUsername()) && dto.password().equals(user.getPassword())) {
@@ -37,8 +37,8 @@ public class BasicAuthService implements AuthService {
         return userStatus;
     }
 
-    private UserResponseDto createUserResponseDto(User user) {
+    private UserResponse createUserResponseDto(User user) {
         UserStatus userStatus = getUserStatus(user);
-        return new UserResponseDto(user.getId(), user.getUsername(), user.getEmail(), userStatus.isOnline());
+        return new UserResponse(user.getId(), user.getUsername(), user.getEmail(), userStatus.isOnline());
     }
 }
