@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
-import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
+import com.sprint.mission.discodeit.dto.request.CreateUserRequest;
+import com.sprint.mission.discodeit.dto.request.UpdateUserRequest;
 import com.sprint.mission.discodeit.dto.response.UserResponse;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.User;
@@ -23,7 +23,7 @@ public class BasicUserService implements UserService {
     private final BinaryContentRepository binaryContentRepository;
 
     @Override
-    public UserResponse create(UserCreateRequest newUser) {
+    public UserResponse create(CreateUserRequest newUser) {
 
         boolean isDuplicatedUsername = isDuplicatedUsername(newUser.username());
         boolean isDuplicatedEmail = isDuplicatedEmail(newUser.email());
@@ -40,14 +40,14 @@ public class BasicUserService implements UserService {
 
         User savedUser = userRepository.save(user);
         userStatusRepository.save(new UserStatus(savedUser.getId()));
-        return createUserResponseDto(savedUser);
+        return createUserResponse(savedUser);
     }
 
     @Override
     public UserResponse find(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("해당 id(" + userId + ")를 가진 유저를 찾을 수 없음"));
-        return createUserResponseDto(user);
+        return createUserResponse(user);
     }
 
     @Override
@@ -55,14 +55,14 @@ public class BasicUserService implements UserService {
         List<User> userList = userRepository.findAll();
         List<UserResponse> result = new ArrayList<>();
         for (User user : userList) {
-            result.add(createUserResponseDto(user));
+            result.add(createUserResponse(user));
         }
 
         return result;
     }
 
     @Override
-    public UserResponse update(UUID id, UserUpdateRequest dto) {
+    public UserResponse update(UUID id, UpdateUserRequest dto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("해당 id(" + id + ")를 가진 유저를 찾을 수 없음"));
 
@@ -86,7 +86,7 @@ public class BasicUserService implements UserService {
         }
         user.update(dto.newUsername(), dto.newEmail(), dto.newPassword(), newProfileId);
         User updatedUser = userRepository.save(user);
-        return createUserResponseDto(updatedUser);
+        return createUserResponse(updatedUser);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class BasicUserService implements UserService {
         return userList.stream().anyMatch(user -> email.equals(user.getEmail()));
     }
 
-    private BinaryContent createBinaryContent(UserCreateRequest newUser, User user) {
+    private BinaryContent createBinaryContent(CreateUserRequest newUser, User user) {
         String filename = newUser.profile().filename();
         Long size = newUser.profile().size();
         String contentType = newUser.profile().contentType();
@@ -124,7 +124,7 @@ public class BasicUserService implements UserService {
         return binaryContent;
     }
 
-    private BinaryContent createBinaryContent(UserUpdateRequest updatedUser, User user) {
+    private BinaryContent createBinaryContent(UpdateUserRequest updatedUser, User user) {
         String filename = updatedUser.profile().filename();
         Long size = updatedUser.profile().size();
         String contentType = updatedUser.profile().contentType();
@@ -142,7 +142,7 @@ public class BasicUserService implements UserService {
     }
 
     // User를 온라인 상태가 포함된 응답 DTO로 변환
-    private UserResponse createUserResponseDto(User user) {
+    private UserResponse createUserResponse(User user) {
         UserStatus userStatus = getUserStatus(user);
         return new UserResponse(user.getId(), user.getUsername(), user.getEmail(), userStatus.isOnline());
     }
