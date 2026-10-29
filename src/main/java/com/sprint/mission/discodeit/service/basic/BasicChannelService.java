@@ -35,13 +35,19 @@ public class BasicChannelService implements ChannelService {
 
     @Override
     public CreatePrivateChannelResponse createPrivateChannel(CreatePrivateChannelRequest request) {
-        if (request.userList() == null) {
-            throw new IllegalArgumentException("참여자 없이 private 채널 생성은 불가능");
+        List<UUID> requestedIds = request.userList();
+        if (requestedIds == null || requestedIds.isEmpty()
+                || requestedIds.stream().anyMatch(Objects::isNull)) {
+            throw new IllegalArgumentException("유효한 참여자가 필요합니다.");
         }
+
+        // 중복된 참여자는 한 번만 등록
+        List<UUID> userUUIDs = requestedIds.stream()
+                .distinct()
+                .toList();
 
         Channel channel = new Channel(ChannelType.PRIVATE, "", "");
         channelRepository.save(channel);
-        List<UUID> userUUIDs = request.userList();
         for (UUID userUUID : userUUIDs) {
             readStatusRepository.save(new ReadStatus(userUUID, channel.getId()));
         }

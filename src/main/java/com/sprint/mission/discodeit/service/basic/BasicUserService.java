@@ -40,14 +40,14 @@ public class BasicUserService implements UserService {
 
         User savedUser = userRepository.save(user);
         userStatusRepository.save(new UserStatus(savedUser.getId()));
-        return createUserResponse(savedUser);
+        return from(savedUser);
     }
 
     @Override
     public UserResponse find(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("해당 id(" + userId + ")를 가진 유저를 찾을 수 없음"));
-        return createUserResponse(user);
+                .orElseThrow(() -> new NoSuchElementException("해당 id를 가진 유저를 찾을 수 없음"));
+        return from(user);
     }
 
     @Override
@@ -55,19 +55,19 @@ public class BasicUserService implements UserService {
         List<User> userList = userRepository.findAll();
         List<UserResponse> result = new ArrayList<>();
         for (User user : userList) {
-            result.add(createUserResponse(user));
+            result.add(from(user));
         }
 
         return result;
     }
 
     @Override
-    public UserResponse update(UUID id, UpdateUserRequest dto) {
+    public UserResponse update(UUID id, UpdateUserRequest request) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("해당 id(" + id + ")를 가진 유저를 찾을 수 없음"));
+                .orElseThrow(() -> new NoSuchElementException("해당 id를 가진 유저를 찾을 수 없음"));
 
-        boolean isDuplicatedUsername = isDuplicatedUsername(user.getUsername());
-        boolean isDuplicatedEmail = isDuplicatedEmail(user.getEmail());
+        boolean isDuplicatedUsername = isDuplicatedUsername(request.newUsername());
+        boolean isDuplicatedEmail = isDuplicatedEmail(request.newEmail());
 
         if (isDuplicatedUsername || isDuplicatedEmail) {
             throw new IllegalArgumentException("중복된 유저명 또는 이메일");
@@ -75,8 +75,8 @@ public class BasicUserService implements UserService {
 
         UUID oldProfileId = user.getProfileId();
         UUID newProfileId = null;
-        if (dto.profile() != null) {
-            BinaryContent binaryContent = createBinaryContent(dto, user);
+        if (request.profile() != null) {
+            BinaryContent binaryContent = createBinaryContent(request, user);
             binaryContentRepository.save(binaryContent);
             newProfileId = binaryContent.getId();
 
@@ -84,15 +84,15 @@ public class BasicUserService implements UserService {
                 binaryContentRepository.deleteById(oldProfileId);
             }
         }
-        user.update(dto.newUsername(), dto.newEmail(), dto.newPassword(), newProfileId);
+        user.update(request.newUsername(), request.newEmail(), request.newPassword(), newProfileId);
         User updatedUser = userRepository.save(user);
-        return createUserResponse(updatedUser);
+        return from(updatedUser);
     }
 
     @Override
     public void delete(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("해당 id(" + userId + ")를 가진 유저를 찾을 수 없음"));
+                .orElseThrow(() -> new NoSuchElementException("해당 id를 가진 유저를 찾을 수 없음"));
 
         // 프로필 이미지가 있으면 삭제
         if (user.getProfileId() != null) {
@@ -137,12 +137,12 @@ public class BasicUserService implements UserService {
 
     private UserStatus getUserStatus(User user) {
         UserStatus userStatus = userStatusRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new NoSuchElementException("해당 id(" + user.getId() + ")의 유저 상태를 찾을 수 없음"));
+                .orElseThrow(() -> new NoSuchElementException("해당 id의 유저 상태를 찾을 수 없음"));
         return userStatus;
     }
 
     // User를 온라인 상태가 포함된 응답 DTO로 변환
-    private UserResponse createUserResponse(User user) {
+    private UserResponse from(User user) {
         UserStatus userStatus = getUserStatus(user);
         return new UserResponse(user.getId(), user.getUsername(), user.getEmail(), userStatus.isOnline());
     }
