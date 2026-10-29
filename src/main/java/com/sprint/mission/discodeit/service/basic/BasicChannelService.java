@@ -7,10 +7,7 @@ import com.sprint.mission.discodeit.dto.response.CreatePrivateChannelResponse;
 import com.sprint.mission.discodeit.dto.response.ChannelResponse;
 import com.sprint.mission.discodeit.dto.response.FindChannelResponse;
 import com.sprint.mission.discodeit.entity.*;
-import com.sprint.mission.discodeit.repository.BinaryContentRepository;
-import com.sprint.mission.discodeit.repository.ChannelRepository;
-import com.sprint.mission.discodeit.repository.MessageRepository;
-import com.sprint.mission.discodeit.repository.ReadStatusRepository;
+import com.sprint.mission.discodeit.repository.*;
 import com.sprint.mission.discodeit.service.ChannelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +22,7 @@ public class BasicChannelService implements ChannelService {
     private final ReadStatusRepository readStatusRepository;
     private final MessageRepository messageRepository;
     private final BinaryContentRepository binaryContentRepository;
+    private final UserRepository userRepository;
 
     @Override
     public ChannelResponse createPublicChannel(CreatePublicChannelRequest request) {
@@ -45,6 +43,15 @@ public class BasicChannelService implements ChannelService {
         List<UUID> userUUIDs = requestedIds.stream()
                 .distinct()
                 .toList();
+
+        // 실제 존재하는 유저인지 검증
+        userUUIDs.stream()
+                .filter(uuid -> !userRepository.existsById(uuid))
+                .findFirst()
+                .ifPresent(uuid -> {
+                    throw new NoSuchElementException("해당 유저는 존재하지 않습니다.");
+                });
+
 
         Channel channel = new Channel(ChannelType.PRIVATE, "", "");
         channelRepository.save(channel);

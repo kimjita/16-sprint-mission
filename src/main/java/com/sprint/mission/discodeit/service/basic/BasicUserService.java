@@ -66,23 +66,28 @@ public class BasicUserService implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("해당 id를 가진 유저를 찾을 수 없음"));
 
-        boolean isDuplicatedUsername = isDuplicatedUsername(request.newUsername());
-        boolean isDuplicatedEmail = isDuplicatedEmail(request.newEmail());
+        // 변경하지 않는 필드(null)는 중복 검사에서 제외
+        boolean isDuplicatedUsername = Optional.ofNullable(request.newUsername())
+                .map(this::isDuplicatedUsername)
+                .orElse(false);
+        boolean isDuplicatedEmail = Optional.ofNullable(request.newEmail())
+                .map(this::isDuplicatedEmail)
+                .orElse(false);
 
         if (isDuplicatedUsername || isDuplicatedEmail) {
             throw new IllegalArgumentException("중복된 유저명 또는 이메일");
         }
 
         UUID oldProfileId = user.getProfileId();
-        UUID newProfileId = null;
-        if (request.profile() != null) {
-            BinaryContent binaryContent = createBinaryContent(request, user);
-            binaryContentRepository.save(binaryContent);
-            newProfileId = binaryContent.getId();
+        UUID newProfileId = Optional.ofNullable(request.profile())
+                .map(profile -> createBinaryContent(request, user))
+                .map(binaryContentRepository::save)
+                .map(BinaryContent::getId)
+                .orElse(null);
 
-            if (oldProfileId != null) {
-                binaryContentRepository.deleteById(oldProfileId);
-            }
+        // 새 프로필로 교체된 경우에만 기존 프로필 삭제
+        if (newProfileId != null && oldProfileId != null) {
+            binaryContentRepository.deleteById(oldProfileId);
         }
         user.update(request.newUsername(), request.newEmail(), request.newPassword(), newProfileId);
         User updatedUser = userRepository.save(user);
