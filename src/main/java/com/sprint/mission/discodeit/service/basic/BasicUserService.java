@@ -7,6 +7,7 @@ import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
+import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.UserService;
@@ -21,6 +22,7 @@ public class BasicUserService implements UserService {
     private final UserRepository userRepository;
     private final UserStatusRepository userStatusRepository;
     private final BinaryContentRepository binaryContentRepository;
+    private final ReadStatusRepository readStatusRepository;
 
     @Override
     public UserResponse create(CreateUserRequest newUser) {
@@ -106,6 +108,10 @@ public class BasicUserService implements UserService {
         userStatusRepository.findByUserId(userId)
                 .ifPresent(userStatus -> userStatusRepository.deleteById(userStatus.getId()));
         userRepository.deleteById(userId);
+
+        readStatusRepository.findAll().stream()
+                .filter(status -> userId.equals(status.getUserId()))
+                .forEach(status -> readStatusRepository.deleteById(status.getId()));
     }
 
     private boolean isDuplicatedUsername(String username) {
