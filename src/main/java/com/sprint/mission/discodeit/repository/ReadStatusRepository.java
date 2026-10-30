@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ReadStatusRepository {
-    ReadStatus save(ReadStatus userStatus);
+    ReadStatus save(ReadStatus readStatus);
     Optional<ReadStatus> findById(UUID id);
     List<ReadStatus> findAll();
     boolean existsById(UUID id);

@@ -42,7 +42,6 @@ public class BasicBinaryContentService implements BinaryContentService {
         return contentIds.stream()
                 .map(this::find)
                 .toList();
-
     }
 
     @Override
@@ -50,7 +49,6 @@ public class BasicBinaryContentService implements BinaryContentService {
         if (!binaryContentRepository.existsById(contentId)) {
             throw new NoSuchElementException("해당 id의 content가 없습니다.");
         }
-
         binaryContentRepository.deleteById(contentId);
     }
 }
