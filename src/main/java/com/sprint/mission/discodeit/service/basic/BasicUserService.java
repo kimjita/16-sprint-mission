@@ -69,14 +69,15 @@ public class BasicUserService implements UserService {
                 .orElseThrow(() -> new NoSuchElementException("해당 id를 가진 유저를 찾을 수 없음"));
 
         // 변경하지 않는 필드(null)는 중복 검사에서 제외
-        boolean isDuplicatedUsername = Optional.ofNullable(request.newUsername())
-                .map(this::isDuplicatedUsername)
-                .orElse(false);
-        boolean isDuplicatedEmail = Optional.ofNullable(request.newEmail())
-                .map(this::isDuplicatedEmail)
-                .orElse(false);
+        boolean duplicated = userRepository.findAll().stream()
+                .filter(other -> !other.getId().equals(id))
+                .anyMatch(other ->
+                        (request.newUsername() != null
+                                && request.newUsername().equals(other.getUsername()))
+                                || (request.newEmail() != null
+                                && request.newEmail().equals(other.getEmail())));
 
-        if (isDuplicatedUsername || isDuplicatedEmail) {
+        if (duplicated) {
             throw new IllegalArgumentException("중복된 유저명 또는 이메일");
         }
 
