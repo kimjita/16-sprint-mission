@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("api/message")
+@RequestMapping("api/messages")
 public class MessageController {
     private final MessageService messageService;
 
@@ -39,20 +39,20 @@ public class MessageController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PatchMapping("/update/{message-id}")
+    @PatchMapping("/{messageId}")
     public ResponseEntity<MessageResponse> updateMessage(@RequestBody UpdateMessageRequest request,
-                                                         @PathVariable("message-id") UUID messageId) {
+                                                         @PathVariable("messageId") UUID messageId) {
         return ResponseEntity.ok(messageService.update(messageId, request));
     }
 
-    @DeleteMapping("/delete/{message-id}")
-    public ResponseEntity deleteMessage(@PathVariable("message-id") UUID messageId) {
+    @DeleteMapping("/{messageId}")
+    public ResponseEntity deleteMessage(@RequestParam UUID messageId) {
         messageService.delete(messageId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @GetMapping("/{channel-id}")
-    public ResponseEntity<List<MessageResponse>> getMessages(@PathVariable("channel-id") UUID channelId) {
+    @GetMapping
+    public ResponseEntity<List<MessageResponse>> getMessages(@RequestParam UUID channelId) {
         List<MessageResponse> response = messageService.findAllByChannelId(channelId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

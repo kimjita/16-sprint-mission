@@ -20,13 +20,13 @@ import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/binaryContent")
+@RequestMapping("/api/binaryContents")
 public class BinaryContentController {
 
     private final BinaryContentService binaryContentService;
 
-    @GetMapping("/{content-id}")
-    public ResponseEntity<Resource> getContent(@PathVariable("content-id") UUID contentId) {
+    @GetMapping("/{binaryContentId}")
+    public ResponseEntity<Resource> getContent(@PathVariable("binaryContentId") UUID contentId) {
         BinaryContentResponse response = binaryContentService.find(contentId);
         ContentDisposition contentDisposition = ContentDisposition.attachment()
                 .filename(response.filename(), StandardCharsets.UTF_8)
@@ -39,13 +39,7 @@ public class BinaryContentController {
                 .body(new ByteArrayResource(response.bytes()));
     }
 
-    @GetMapping("/find/{content-id}")
-    public ResponseEntity<BinaryContentResponse> showContent(@PathVariable("content-id") UUID contentId) {
-        BinaryContentResponse response = binaryContentService.find(contentId);
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/list")
+    @GetMapping
     public ResponseEntity<List<BinaryContentResponse>> getContents(@RequestParam List<UUID> contentIds) {
         return ResponseEntity.ok(binaryContentService.findAllByIdIn(contentIds));
     }

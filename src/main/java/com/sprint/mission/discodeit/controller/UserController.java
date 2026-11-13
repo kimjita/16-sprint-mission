@@ -13,20 +13,21 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<UserResponse> postUser(@RequestPart("username") String username,
-                                   @RequestPart("email") String email,
-                                   @RequestPart("password") String password,
-                                   @RequestPart(required = false) MultipartFile profile) throws IOException {
+                                                 @RequestPart("email") String email,
+                                                 @RequestPart("password") String password,
+                                                 @RequestPart(required = false) MultipartFile profile) throws IOException {
 
         BinaryContentRequest contentRequest = null;
         if (profile != null) {
@@ -39,22 +40,28 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/findAll")
+    @GetMapping
     public ResponseEntity<List<UserResponse>> getUsers() {
         List<UserResponse> response = userService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PostMapping("/update")
+    @PatchMapping("/{userId}")
     public ResponseEntity<UserResponse> postUpdateUser(@ModelAttribute UpdateUserRequest request,
-                                                       HttpSession session) {
-        UserResponse response = userService.update((UUID) session.getAttribute("userId"), request);
+                                                       @PathVariable UUID userId) {
+        UserResponse response = userService.update(userId, request);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity deleteUser(HttpSession session) {
-        userService.delete((UUID) session.getAttribute("userId"));
+    @PatchMapping
+    public ResponseEntity<UserResponse> updateOnlineStatus(@RequestBody Instant lastActiveAt,
+                                                         @PathVariable UUID userId) {
+        return null;
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity deleteUser(@PathVariable UUID userId) {
+        userService.delete(userId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

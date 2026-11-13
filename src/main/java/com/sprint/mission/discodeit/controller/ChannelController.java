@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("api/channel")
+@RequestMapping("api/channels")
 public class ChannelController {
     private final ChannelService channelService;
 
@@ -33,27 +33,21 @@ public class ChannelController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PatchMapping("/update")
+    @PatchMapping("/{channelId}")
     public ResponseEntity<ChannelResponse> updateChannel(@RequestBody UpdateChannelRequest request) {
         ChannelResponse response = channelService.update(request);
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/delete/{channel-id}")
-    public ResponseEntity deleteChannel(@PathVariable("channel-id") UUID channelId) {
+    @DeleteMapping("/{channelId}")
+    public ResponseEntity deleteChannel(@PathVariable UUID channelId) {
         channelService.delete(channelId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @GetMapping("/user/{user-id}")
-    public ResponseEntity<List<FindChannelResponse>> getChannels(@PathVariable("user-id") UUID userId) {
+    @GetMapping
+    public ResponseEntity<List<FindChannelResponse>> getChannels(@RequestParam UUID userId) {
         List<FindChannelResponse> response = channelService.findAllByUserId(userId);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-    @GetMapping("/{channelId}")
-    public ResponseEntity<FindChannelResponse> getChannel(@PathVariable UUID channelId) {
-        FindChannelResponse response = channelService.find(channelId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
