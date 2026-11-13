@@ -161,7 +161,7 @@ class BasicReadStatusServiceTest {
             ReadStatusResponse created = createReadStatus(saveUser(), saveChannel());
             Instant newLastReadAt = Instant.now().minusSeconds(600);
 
-            ReadStatusResponse updated = readStatusService.update(created.id(), new UpdateReadStatusRequest(created.id(), newLastReadAt));
+            ReadStatusResponse updated = readStatusService.update(created.id(), new UpdateReadStatusRequest(newLastReadAt));
 
             assertThat(updated.lastReadAt()).isEqualTo(newLastReadAt.toString());
             assertThat(readStatusService.find(created.id()).lastReadAt()).isEqualTo(newLastReadAt.toString());
@@ -172,7 +172,7 @@ class BasicReadStatusServiceTest {
         void nullValue() {
             ReadStatusResponse created = createReadStatus(saveUser(), saveChannel());
 
-            assertThatThrownBy(() -> readStatusService.update(created.id(), new UpdateReadStatusRequest(created.id(), null)))
+            assertThatThrownBy(() -> readStatusService.update(created.id(), new UpdateReadStatusRequest(null)))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -182,16 +182,16 @@ class BasicReadStatusServiceTest {
             ReadStatusResponse created = createReadStatus(saveUser(), saveChannel());
             Instant future = Instant.now().plusSeconds(600);
 
-            assertThatThrownBy(() -> readStatusService.update(created.id(), new UpdateReadStatusRequest(created.id(), future)))
+            assertThatThrownBy(() -> readStatusService.update(created.id(), new UpdateReadStatusRequest(future)))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
         @DisplayName("존재하지 않는 id면 예외가 발생한다")
         void notFound() {
-            UpdateReadStatusRequest request = new UpdateReadStatusRequest(UUID.randomUUID(), Instant.now());
+            UpdateReadStatusRequest request = new UpdateReadStatusRequest(Instant.now());
 
-            assertThatThrownBy(() -> readStatusService.update(request.statusId(), request))
+            assertThatThrownBy(() -> readStatusService.update(UUID.randomUUID(), request))
                     .isInstanceOf(NoSuchElementException.class);
         }
     }

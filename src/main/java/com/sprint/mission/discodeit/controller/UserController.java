@@ -4,6 +4,7 @@ import com.sprint.mission.discodeit.dto.request.BinaryContentRequest;
 import com.sprint.mission.discodeit.dto.request.CreateUserRequest;
 import com.sprint.mission.discodeit.dto.request.UpdateUserRequest;
 import com.sprint.mission.discodeit.dto.request.UpdateUserStatusRequest;
+import com.sprint.mission.discodeit.dto.response.FindUserResponse;
 import com.sprint.mission.discodeit.dto.response.UserResponse;
 import com.sprint.mission.discodeit.dto.response.UserStatusResponse;
 import com.sprint.mission.discodeit.service.UserService;
@@ -29,7 +30,7 @@ public class UserController {
     private final UserStatusService userStatusService;
 
     @PostMapping
-    public ResponseEntity<UserResponse> postUser(@RequestPart("request") CreateUserRequest request,
+    public ResponseEntity<UserResponse> postUser(@RequestPart("userCreateRequest") CreateUserRequest request,
                                                  @RequestPart(value = "profile", required = false) MultipartFile profile) throws IOException {
 
         BinaryContentRequest contentRequest = null;
@@ -43,13 +44,13 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponse>> getUsers() {
-        List<UserResponse> response = userService.findAll();
+    public ResponseEntity<List<FindUserResponse>> getUsers() {
+        List<FindUserResponse> response = userService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PatchMapping(value = "/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UserResponse> updateUser(@RequestPart("request") UpdateUserRequest request,
+    public ResponseEntity<UserResponse> updateUser(@RequestPart("userUpdateRequest") UpdateUserRequest request,
                                                            @RequestPart(value = "profile", required = false) MultipartFile profile,
                                                            @PathVariable UUID userId) throws IOException {
         BinaryContentRequest contentRequest = null;

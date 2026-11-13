@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.service.basic;
 import com.sprint.mission.discodeit.dto.request.BinaryContentRequest;
 import com.sprint.mission.discodeit.dto.request.CreateUserRequest;
 import com.sprint.mission.discodeit.dto.request.UpdateUserRequest;
+import com.sprint.mission.discodeit.dto.response.FindUserResponse;
 import com.sprint.mission.discodeit.dto.response.UserResponse;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.entity.User;
@@ -140,9 +141,9 @@ class BasicUserServiceTest {
             UserResponse first = createUser("first", "first@test.com");
             UserResponse second = createUser("second", "second@test.com");
 
-            List<UserResponse> result = userService.findAll();
+            List<FindUserResponse> result = userService.findAll();
 
-            assertThat(result).extracting(UserResponse::id)
+            assertThat(result).extracting(FindUserResponse::id)
                     .containsExactlyInAnyOrder(first.id(), second.id());
         }
 

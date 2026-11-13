@@ -1,12 +1,9 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.dto.response.BinaryContentResponse;
-import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.service.BinaryContentService;
 import lombok.AllArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.InvalidMediaTypeException;
@@ -26,21 +23,21 @@ public class BinaryContentController {
     private final BinaryContentService binaryContentService;
 
     @GetMapping("/{binaryContentId}")
-    public ResponseEntity<Resource> getContent(@PathVariable("binaryContentId") UUID contentId) {
+    public ResponseEntity<BinaryContentResponse> getContent(@PathVariable("binaryContentId") UUID contentId) {
         BinaryContentResponse response = binaryContentService.find(contentId);
         ContentDisposition contentDisposition = ContentDisposition.attachment()
-                .filename(response.filename(), StandardCharsets.UTF_8)
+                .filename(response.fileName(), StandardCharsets.UTF_8)
                 .build();
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
                 .contentType(toMediaType(response.contentType()))
                 .contentLength(response.bytes().length)
-                .body(new ByteArrayResource(response.bytes()));
+                .body(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<BinaryContentResponse>> getContents(@RequestParam List<UUID> contentIds) {
+    public ResponseEntity<List<BinaryContentResponse>> getContents(@RequestParam("binaryContentIds") List<UUID> contentIds) {
         return ResponseEntity.ok(binaryContentService.findAllByIdIn(contentIds));
     }
 

@@ -12,11 +12,12 @@ public record UserResponse(
         Instant updatedAt,
         String username,
         String email,
+        String password,
         UUID profileId,
         boolean online
 ) {
     public static UserResponse from(User user, UserStatus status) {
         return new UserResponse(user.getId(), user.getCreatedAt(), user.getUpdatedAt(),
-                user.getUsername(), user.getEmail(), user.getProfileId(), status.isOnline());
+                user.getUsername(), user.getEmail(), user.getPassword(), user.getProfileId(), status.isOnline());
     }
 }
