@@ -70,12 +70,12 @@ public class BasicReadStatusService implements ReadStatusService {
     }
 
     @Override
-    public ReadStatusResponse update(UpdateReadStatusRequest request) {
+    public ReadStatusResponse update(UUID readStatusId, UpdateReadStatusRequest request) {
         if (request.lastReadAt() == null) {
             throw new IllegalArgumentException("최근 읽은 시간이 null일 수 없음");
         }
 
-        ReadStatus readStatus = readStatusRepository.findById(request.statusId())
+        ReadStatus readStatus = readStatusRepository.findById(readStatusId)
                 .orElseThrow(() -> new NoSuchElementException("해당 id의 read status는 존재하지 않음"));
 
         if (request.lastReadAt().isAfter(Instant.now())) {
