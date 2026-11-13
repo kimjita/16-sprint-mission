@@ -15,6 +15,6 @@ public interface ChannelService {
     PrivateChannelResponse createPrivateChannel(CreatePrivateChannelRequest request);
     FindChannelResponse find(UUID channelId);
     List<FindChannelResponse> findAllByUserId(UUID userId);
-    ChannelResponse update(UpdateChannelRequest request);
+    ChannelResponse update(UUID channelId, UpdateChannelRequest request);
     void delete(UUID channelId);
 }

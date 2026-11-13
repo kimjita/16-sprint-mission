@@ -33,7 +33,7 @@ public class BasicChannelService implements ChannelService {
 
     @Override
     public PrivateChannelResponse createPrivateChannel(CreatePrivateChannelRequest request) {
-        List<UUID> requestedIds = request.userList();
+        List<UUID> requestedIds = request.participantIds();
         if (requestedIds == null || requestedIds.isEmpty()
                 || requestedIds.stream().anyMatch(Objects::isNull)) {
             throw new IllegalArgumentException("유효한 참여자가 필요합니다.");
@@ -97,8 +97,8 @@ public class BasicChannelService implements ChannelService {
     }
 
     @Override
-    public ChannelResponse update(UpdateChannelRequest request) {
-        Channel channel = channelRepository.findById(request.id())
+    public ChannelResponse update(UUID channelId, UpdateChannelRequest request) {
+        Channel channel = channelRepository.findById(channelId)
                 .orElseThrow(() -> new NoSuchElementException("해당 id를 가진 채널이 없음"));
 
         if (channel.getType() == ChannelType.PRIVATE) {

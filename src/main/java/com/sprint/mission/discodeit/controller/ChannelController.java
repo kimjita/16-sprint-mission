@@ -35,8 +35,9 @@ public class ChannelController {
     }
 
     @PatchMapping("/{channelId}")
-    public ResponseEntity<ChannelResponse> updateChannel(@RequestBody UpdateChannelRequest request) {
-        ChannelResponse response = channelService.update(request);
+    public ResponseEntity<ChannelResponse> updateChannel(@RequestBody UpdateChannelRequest request,
+                                                         @PathVariable UUID channelId) {
+        ChannelResponse response = channelService.update(channelId, request);
         return ResponseEntity.ok(response);
     }
 
