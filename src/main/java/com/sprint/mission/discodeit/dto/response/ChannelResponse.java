@@ -7,12 +7,14 @@ import java.util.UUID;
 
 public record ChannelResponse(
         UUID id,
+        String createdAt,
+        String updatedAt,
         ChannelType channelType,
         String name,
         String description
 ) {
     public static ChannelResponse from(Channel channel) {
-        return new ChannelResponse(channel.getId(), channel.getType(),
-                channel.getName(), channel.getDescription());
+        return new ChannelResponse(channel.getId(), channel.getCreatedAt().toString(),
+                channel.getUpdatedAt().toString(), channel.getType(), channel.getName(), channel.getDescription());
     }
 }

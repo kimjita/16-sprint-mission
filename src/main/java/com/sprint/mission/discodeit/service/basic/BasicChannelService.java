@@ -3,7 +3,7 @@ package com.sprint.mission.discodeit.service.basic;
 import com.sprint.mission.discodeit.dto.request.UpdateChannelRequest;
 import com.sprint.mission.discodeit.dto.request.CreatePrivateChannelRequest;
 import com.sprint.mission.discodeit.dto.request.CreatePublicChannelRequest;
-import com.sprint.mission.discodeit.dto.response.CreatePrivateChannelResponse;
+import com.sprint.mission.discodeit.dto.response.PrivateChannelResponse;
 import com.sprint.mission.discodeit.dto.response.ChannelResponse;
 import com.sprint.mission.discodeit.dto.response.FindChannelResponse;
 import com.sprint.mission.discodeit.entity.*;
@@ -32,7 +32,7 @@ public class BasicChannelService implements ChannelService {
     }
 
     @Override
-    public CreatePrivateChannelResponse createPrivateChannel(CreatePrivateChannelRequest request) {
+    public PrivateChannelResponse createPrivateChannel(CreatePrivateChannelRequest request) {
         List<UUID> requestedIds = request.userList();
         if (requestedIds == null || requestedIds.isEmpty()
                 || requestedIds.stream().anyMatch(Objects::isNull)) {
@@ -59,7 +59,7 @@ public class BasicChannelService implements ChannelService {
             readStatusRepository.save(new ReadStatus(userUUID, channel.getId()));
         }
 
-        return new CreatePrivateChannelResponse(channel.getId(), channel.getType());
+        return PrivateChannelResponse.from(channel);
     }
 
     @Override

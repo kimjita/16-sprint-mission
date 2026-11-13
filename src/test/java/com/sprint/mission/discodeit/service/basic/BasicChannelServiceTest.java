@@ -4,7 +4,7 @@ import com.sprint.mission.discodeit.dto.request.CreatePrivateChannelRequest;
 import com.sprint.mission.discodeit.dto.request.CreatePublicChannelRequest;
 import com.sprint.mission.discodeit.dto.request.UpdateChannelRequest;
 import com.sprint.mission.discodeit.dto.response.ChannelResponse;
-import com.sprint.mission.discodeit.dto.response.CreatePrivateChannelResponse;
+import com.sprint.mission.discodeit.dto.response.PrivateChannelResponse;
 import com.sprint.mission.discodeit.dto.response.FindChannelResponse;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.ChannelType;
@@ -62,7 +62,7 @@ class BasicChannelServiceTest {
         return channelService.createPublicChannel(new CreatePublicChannelRequest("public", "description"));
     }
 
-    private CreatePrivateChannelResponse createPrivateChannel(UUID... userIds) {
+    private PrivateChannelResponse createPrivateChannel(UUID... userIds) {
         return channelService.createPrivateChannel(new CreatePrivateChannelRequest(Arrays.asList(userIds)));
     }
 
@@ -94,7 +94,7 @@ class BasicChannelServiceTest {
             User first = saveUser();
             User second = saveUser();
 
-            CreatePrivateChannelResponse response = createPrivateChannel(first.getId(), second.getId());
+            PrivateChannelResponse response = createPrivateChannel(first.getId(), second.getId());
 
             assertThat(response.channelType()).isEqualTo(ChannelType.PRIVATE);
             assertThat(channelRepository.existsById(response.id())).isTrue();
@@ -109,7 +109,7 @@ class BasicChannelServiceTest {
         void duplicatedParticipant() {
             User user = saveUser();
 
-            CreatePrivateChannelResponse response = createPrivateChannel(user.getId(), user.getId());
+            PrivateChannelResponse response = createPrivateChannel(user.getId(), user.getId());
 
             assertThat(readStatusRepository.findAll())
                     .filteredOn(status -> response.id().equals(status.getChannelId()))
@@ -171,7 +171,7 @@ class BasicChannelServiceTest {
         void privateChannel() {
             User first = saveUser();
             User second = saveUser();
-            CreatePrivateChannelResponse created = createPrivateChannel(first.getId(), second.getId());
+            PrivateChannelResponse created = createPrivateChannel(first.getId(), second.getId());
 
             FindChannelResponse found = channelService.find(created.id());
 
@@ -214,7 +214,7 @@ class BasicChannelServiceTest {
             User user = saveUser();
             User other = saveUser();
             ChannelResponse publicChannel = createPublicChannel();
-            CreatePrivateChannelResponse joined = createPrivateChannel(user.getId(), other.getId());
+            PrivateChannelResponse joined = createPrivateChannel(user.getId(), other.getId());
             createPrivateChannel(other.getId());
 
             List<FindChannelResponse> result = channelService.findAllByUserId(user.getId());
@@ -255,7 +255,7 @@ class BasicChannelServiceTest {
         @Test
         @DisplayName("PRIVATE 채널은 수정할 수 없다")
         void privateChannel() {
-            CreatePrivateChannelResponse created = createPrivateChannel(saveUser().getId());
+            PrivateChannelResponse created = createPrivateChannel(saveUser().getId());
             UpdateChannelRequest request = new UpdateChannelRequest(created.id(), "newName", "newDescription");
 
             assertThatThrownBy(() -> channelService.update(request))
@@ -279,7 +279,7 @@ class BasicChannelServiceTest {
         @DisplayName("채널을 삭제하면 ReadStatus, 메시지, 첨부파일도 함께 삭제된다")
         void success() {
             User user = saveUser();
-            CreatePrivateChannelResponse created = createPrivateChannel(user.getId());
+            PrivateChannelResponse created = createPrivateChannel(user.getId());
             BinaryContent attachment = binaryContentRepository.save(
                     new BinaryContent("file.txt", 1L, "text/plain", new byte[]{1}));
             Message message = saveMessage(created.id(), new ArrayList<>(List.of(attachment.getId())));
@@ -296,8 +296,8 @@ class BasicChannelServiceTest {
         @DisplayName("다른 채널의 메시지와 ReadStatus는 삭제하지 않는다")
         void keepOthers() {
             User user = saveUser();
-            CreatePrivateChannelResponse target = createPrivateChannel(user.getId());
-            CreatePrivateChannelResponse other = createPrivateChannel(user.getId());
+            PrivateChannelResponse target = createPrivateChannel(user.getId());
+            PrivateChannelResponse other = createPrivateChannel(user.getId());
             Message otherMessage = saveMessage(other.id(), new ArrayList<>());
 
             channelService.delete(target.id());

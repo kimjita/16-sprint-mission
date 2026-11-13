@@ -1,10 +1,11 @@
 package com.sprint.mission.discodeit.controller;
 
+import com.sprint.mission.discodeit.api.ApiResponse;
 import com.sprint.mission.discodeit.dto.request.CreatePrivateChannelRequest;
 import com.sprint.mission.discodeit.dto.request.CreatePublicChannelRequest;
 import com.sprint.mission.discodeit.dto.request.UpdateChannelRequest;
 import com.sprint.mission.discodeit.dto.response.ChannelResponse;
-import com.sprint.mission.discodeit.dto.response.CreatePrivateChannelResponse;
+import com.sprint.mission.discodeit.dto.response.PrivateChannelResponse;
 import com.sprint.mission.discodeit.dto.response.FindChannelResponse;
 import com.sprint.mission.discodeit.service.ChannelService;
 import lombok.AllArgsConstructor;
@@ -22,21 +23,23 @@ public class ChannelController {
     private final ChannelService channelService;
 
     @PostMapping("/public")
-    public ResponseEntity<ChannelResponse> createPublicChannel(@RequestBody CreatePublicChannelRequest request) {
+    public ResponseEntity<ApiResponse<ChannelResponse>> createPublicChannel(@RequestBody CreatePublicChannelRequest request) {
         ChannelResponse response = channelService.createPublicChannel(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        ApiResponse<ChannelResponse> apiResponse = new ApiResponse<ChannelResponse>(true, response, null);
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
     @PostMapping("/private")
-    public ResponseEntity<CreatePrivateChannelResponse> createPrivateChannel(@RequestBody CreatePrivateChannelRequest request) {
-        CreatePrivateChannelResponse response = channelService.createPrivateChannel(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public ResponseEntity<ApiResponse<PrivateChannelResponse>> createPrivateChannel(@RequestBody CreatePrivateChannelRequest request) {
+        PrivateChannelResponse response = channelService.createPrivateChannel(request);
+        ApiResponse<PrivateChannelResponse> apiResponse = new ApiResponse<>(true, response, null);
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
     @PatchMapping("/{channelId}")
-    public ResponseEntity<ChannelResponse> updateChannel(@RequestBody UpdateChannelRequest request) {
+    public ResponseEntity<ApiResponse<ChannelResponse>> updateChannel(@RequestBody UpdateChannelRequest request) {
         ChannelResponse response = channelService.update(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new ApiResponse<>(true, response, null));
     }
 
     @DeleteMapping("/{channelId}")
