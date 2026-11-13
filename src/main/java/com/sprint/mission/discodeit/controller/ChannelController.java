@@ -23,23 +23,21 @@ public class ChannelController {
     private final ChannelService channelService;
 
     @PostMapping("/public")
-    public ResponseEntity<ApiResponse<ChannelResponse>> createPublicChannel(@RequestBody CreatePublicChannelRequest request) {
+    public ResponseEntity<ChannelResponse> createPublicChannel(@RequestBody CreatePublicChannelRequest request) {
         ChannelResponse response = channelService.createPublicChannel(request);
-        ApiResponse<ChannelResponse> apiResponse = new ApiResponse<ChannelResponse>(true, response, null);
-        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/private")
-    public ResponseEntity<ApiResponse<PrivateChannelResponse>> createPrivateChannel(@RequestBody CreatePrivateChannelRequest request) {
+    public ResponseEntity<PrivateChannelResponse> createPrivateChannel(@RequestBody CreatePrivateChannelRequest request) {
         PrivateChannelResponse response = channelService.createPrivateChannel(request);
-        ApiResponse<PrivateChannelResponse> apiResponse = new ApiResponse<>(true, response, null);
-        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PatchMapping("/{channelId}")
-    public ResponseEntity<ApiResponse<ChannelResponse>> updateChannel(@RequestBody UpdateChannelRequest request) {
+    public ResponseEntity<ChannelResponse> updateChannel(@RequestBody UpdateChannelRequest request) {
         ChannelResponse response = channelService.update(request);
-        return ResponseEntity.ok(new ApiResponse<>(true, response, null));
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{channelId}")

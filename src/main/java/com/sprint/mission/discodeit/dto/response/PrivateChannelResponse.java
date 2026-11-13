@@ -9,7 +9,7 @@ public record PrivateChannelResponse(
         UUID id,
         String createdAt,
         String updatedAt,
-        ChannelType channelType
+        ChannelType type
 ) {
     public static PrivateChannelResponse from(Channel channel) {
         return new PrivateChannelResponse(channel.getId(), channel.getCreatedAt().toString(),

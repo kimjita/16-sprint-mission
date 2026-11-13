@@ -9,7 +9,7 @@ public record ChannelResponse(
         UUID id,
         String createdAt,
         String updatedAt,
-        ChannelType channelType,
+        ChannelType type,
         String name,
         String description
 ) {

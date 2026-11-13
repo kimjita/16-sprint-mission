@@ -78,7 +78,7 @@ class BasicChannelServiceTest {
         void success() {
             ChannelResponse response = createPublicChannel();
 
-            assertThat(response.channelType()).isEqualTo(ChannelType.PUBLIC);
+            assertThat(response.type()).isEqualTo(ChannelType.PUBLIC);
             assertThat(response.name()).isEqualTo("public");
             assertThat(response.description()).isEqualTo("description");
             assertThat(channelRepository.existsById(response.id())).isTrue();
@@ -96,7 +96,7 @@ class BasicChannelServiceTest {
 
             PrivateChannelResponse response = createPrivateChannel(first.getId(), second.getId());
 
-            assertThat(response.channelType()).isEqualTo(ChannelType.PRIVATE);
+            assertThat(response.type()).isEqualTo(ChannelType.PRIVATE);
             assertThat(channelRepository.existsById(response.id())).isTrue();
             assertThat(readStatusRepository.findAll())
                     .filteredOn(status -> response.id().equals(status.getChannelId()))
@@ -162,7 +162,7 @@ class BasicChannelServiceTest {
             FindChannelResponse found = channelService.find(created.id());
 
             assertThat(found.id()).isEqualTo(created.id());
-            assertThat(found.channelType()).isEqualTo(ChannelType.PUBLIC);
+            assertThat(found.type()).isEqualTo(ChannelType.PUBLIC);
             assertThat(found.participantIds()).isNull();
         }
 

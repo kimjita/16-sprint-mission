@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public record FindChannelResponse(
         UUID id,
-        ChannelType channelType,
+        ChannelType type,
         String name,
         String description,
         Instant lastMessageAt,
