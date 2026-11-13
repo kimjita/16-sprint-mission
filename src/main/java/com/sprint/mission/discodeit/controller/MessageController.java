@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.dto.request.BinaryContentRequest;
-import com.sprint.mission.discodeit.dto.request.CreateMessageRequest;
+import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UpdateMessageRequest;
 import com.sprint.mission.discodeit.dto.response.MessageResponse;
 import com.sprint.mission.discodeit.service.MessageService;
@@ -19,12 +19,12 @@ import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("api/messages")
+@RequestMapping("/api/messages")
 public class MessageController {
     private final MessageService messageService;
 
-    @PostMapping(value = "/send", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<MessageResponse> sendMessage(@RequestPart("request") CreateMessageRequest request,
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<MessageResponse> sendMessage(@RequestPart("request") MessageCreateRequest request,
                                                        @RequestPart(value = "attachments", required = false) List<MultipartFile> files) throws IOException {
         List<BinaryContentRequest> attachments = new ArrayList<>();
         if (files != null) {
@@ -33,9 +33,7 @@ public class MessageController {
                         file.getContentType(), file.getBytes()));
             }
         }
-        CreateMessageRequest newRequest = new CreateMessageRequest(request.content(), request.channelId(),
-                request.authorId(), attachments);
-        MessageResponse response = messageService.create(newRequest);
+        MessageResponse response = messageService.create(attachments, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -46,7 +44,7 @@ public class MessageController {
     }
 
     @DeleteMapping("/{messageId}")
-    public ResponseEntity deleteMessage(@RequestParam UUID messageId) {
+    public ResponseEntity deleteMessage(@PathVariable UUID messageId) {
         messageService.delete(messageId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -54,7 +52,7 @@ public class MessageController {
     @GetMapping
     public ResponseEntity<List<MessageResponse>> getMessages(@RequestParam UUID channelId) {
         List<MessageResponse> response = messageService.findAllByChannelId(channelId);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.ok(response);
     }
 
 

@@ -24,7 +24,7 @@ public class AuthController {
     public ResponseEntity<UserResponse> login(@ModelAttribute LoginRequest request, HttpSession session) {
         UserResponse response = authService.login(request);
         // UserController·UserStatusController가 세션의 userId로 본인을 식별한다
-        session.setAttribute("userId", response.userId());
+        session.setAttribute("userId", response.id());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

@@ -245,7 +245,7 @@ class BasicChannelServiceTest {
         void success() {
             ChannelResponse created = createPublicChannel();
 
-            ChannelResponse updated = channelService.update(new UpdateChannelRequest(created.id(), "newName", "newDescription"));
+            ChannelResponse updated = channelService.update(created.id(), new UpdateChannelRequest("newName", "newDescription"));
 
             assertThat(updated.name()).isEqualTo("newName");
             assertThat(updated.description()).isEqualTo("newDescription");
@@ -256,18 +256,18 @@ class BasicChannelServiceTest {
         @DisplayName("PRIVATE 채널은 수정할 수 없다")
         void privateChannel() {
             PrivateChannelResponse created = createPrivateChannel(saveUser().getId());
-            UpdateChannelRequest request = new UpdateChannelRequest(created.id(), "newName", "newDescription");
+            UpdateChannelRequest request = new UpdateChannelRequest("newName", "newDescription");
 
-            assertThatThrownBy(() -> channelService.update(request))
+            assertThatThrownBy(() -> channelService.update(created.id(), request))
                     .isInstanceOf(IllegalStateException.class);
         }
 
         @Test
         @DisplayName("존재하지 않는 id면 예외가 발생한다")
         void notFound() {
-            UpdateChannelRequest request = new UpdateChannelRequest(UUID.randomUUID(), "newName", "newDescription");
+            UpdateChannelRequest request = new UpdateChannelRequest("newName", "newDescription");
 
-            assertThatThrownBy(() -> channelService.update(request))
+            assertThatThrownBy(() -> channelService.update(UUID.randomUUID(), request))
                     .isInstanceOf(NoSuchElementException.class);
         }
     }

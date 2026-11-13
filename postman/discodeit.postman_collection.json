@@ -85,7 +85,7 @@
                   "pm.test(\"응답에 입력값 반영\", () => { pm.expect(b.username).to.eql(pm.collectionVariables.get(\"username\")); pm.expect(b.email).to.eql(pm.collectionVariables.get(\"email\")); });",
                   "pm.test(\"프로필 id 존재\", () => pm.expect(b.profileId).to.be.a(\"string\"));",
                   "pm.test(\"비밀번호 미노출\", () => pm.expect(b).to.not.have.property(\"password\"));",
-                  "pm.collectionVariables.set(\"userId\", b.userId); pm.collectionVariables.set(\"profileId\", b.profileId);"
+                  "pm.collectionVariables.set(\"userId\", b.id); pm.collectionVariables.set(\"profileId\", b.profileId);"
                 ]
               }
             },
@@ -137,7 +137,7 @@
                 "exec": [
                   "pm.test(\"status 201\", () => pm.response.to.have.status(201));",
                   "pm.test(\"프로필 id 없음\", () => pm.expect(pm.response.json().profileId).to.be.null);",
-                  "pm.collectionVariables.set(\"userId2\", pm.response.json().userId);"
+                  "pm.collectionVariables.set(\"userId2\", pm.response.json().id);"
                 ]
               }
             }
@@ -197,7 +197,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
-                  "pm.test(\"생성한 사용자 포함\", () => pm.expect(pm.response.json().map(u => u.userId)).to.include.members([pm.collectionVariables.get(\"userId\"), pm.collectionVariables.get(\"userId2\")]));"
+                  "pm.test(\"생성한 사용자 포함\", () => pm.expect(pm.response.json().map(u => u.id)).to.include.members([pm.collectionVariables.get(\"userId\"), pm.collectionVariables.get(\"userId2\")]));"
                 ]
               }
             }
@@ -232,7 +232,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
-                  "pm.test(\"로그인한 사용자 반환\", () => pm.expect(pm.response.json().userId).to.eql(pm.collectionVariables.get(\"userId\")));"
+                  "pm.test(\"로그인한 사용자 반환\", () => pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get(\"userId\")));"
                 ]
               }
             }

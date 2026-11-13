@@ -7,13 +7,13 @@ import java.time.Instant;
 import java.util.UUID;
 
 public record UserResponse(
-        UUID userId,
+        UUID id,
         Instant createdAt,
         Instant updatedAt,
         String username,
         String email,
         UUID profileId,
-        boolean isOnline
+        boolean online
 ) {
     public static UserResponse from(User user, UserStatus status) {
         return new UserResponse(user.getId(), user.getCreatedAt(), user.getUpdatedAt(),
